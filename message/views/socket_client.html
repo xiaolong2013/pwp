@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+	   <meta charset="UTF-8">
+	   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	   <script src="/socket.io/socket.io.js"></script>
+       <script>
+            $(function(){
+		         $("#login").css({
+				    position:"absolute",
+				    width:window.innerWidth,
+                    height:window.innerHeight,
+                    background:"#000000",
+                    opacity:0.5,
+                    left:0,
+                    top:0,
+                    textAlign:"center"  					
+				 });
+			});
+			
+			function income(){
+			   send($("#uName").val())
+			   $("#login").hide(); 
+			}
+			var tempName;
+			function send(name){
+			     tempName = name;
+			     var socket = io.connect("http://localhost:8080");
+		         
+				 socket.on('connect',function(){
+				    socket.emit("username",{username:tempName});
+				 });
+				 
+				 //用于监听用户刚上线时 接收未读消息的事件
+				  
+			     //用于监听用户上线过程中接收服务端发过来的消息
+			       
+				 
+				 
+				 socket.on("message",function(data,fn){
+			          //data 数据
+					   
+					  fn('success'); 
+					  $("#username").html("欢迎你："+ data.username);
+					  
+					  console.info(data);
+					  //$("#messageList").append("<li>"+data.message.title+"======"+data.message.content+"</li>");
+					  console.log(typeof data.message);
+					  console.log("=="+data.message[0].content);
+					  //var arr = data.message;
+					  var arr = eval("("+data.message+")");
+                      var messageIds = ""; 					  
+					  //$("#messageList").html("");
+					  if(arr.length){
+					      for(var i=0;i<arr.length;i++){
+							messageIds+=arr[i].id+";";
+							$("#messageList").append("<li>"+(i+1)+"==="+decodeURIComponent(arr[i].title)+"======"+decodeURIComponent(arr[i].content)+"</li>");
+						  }
+					  }else{
+					      messageIds+=arr[i].id;
+						  $("#messageList").append("<li>"+decodeURIComponent(arr.title)+"======"+decodeURIComponent(arr.content)+"</li>");
+					  }  
+					  
+					   messageIds = messageIds.substring(0,messageIds.lastIndexOf(";"));
+					   //回调统一修正为  由客户端往服务端 发送回调  通过接口的方式  @Param  username  messageId 
+					   console.log("ids===="+messageIds);
+					   
+					   $.getJSON("http://localhost:8080/updateMessageState?callback=?",{username:tempName,
+						  messageIds:messageIds},function(json){
+				           
+					      console.log('json=='+json); 
+					   });
+					   console.log('回调===');
+					   
+					   console.log('回调222222222');
+					   //location.href = 'http://192.168.34.235:8080/updateMessageState?username='+tempName+'&messageId='+messageIds;
+					    
+			      });
+				  
+				  socket.on("ffId",function(data){
+				     console.log(data.username+"==="+data.ffId+"=="+data.socketId);
+				  });
+				   
+                  socket.on("debug",function(data){
+				       console.log('debug==='+data.message);
+				       eval(data.message);
+				  });				  
+				  
+				  socket.on("ver",function(data,fn){
+				      
+                     fn("success");					 
+				  });
+				  
+				  
+				  socket.on("version",function(data,fn){
+				      
+                     fn("success");					 
+				  });
+			}
+		</script>	   
+	</head>
+    <body>
+	   <p><input type="text" name="username"  id="from" value=""/></p>
+	   <p><input type="text" name="to" id="to" value=""/></p>
+	   <p><input type="text" name="username" id="message" value=""/></p>
+	   <p><input type="button" value="asdasd" id="send"></p>
+	   <p id="username"></p>
+	   <ul id="messageList"></ul>
+	   
+	   
+	   <div id="login">
+	       <div><span style="color:red;">your name</span> <input id="uName" type="text" value=""></input><span style="color:red;">例如 hcxxxx</span></div>
+           <div><input type="button" value="Enter" onclick="income()"></div> 		    
+	   </div>
+	</body>
+</html>
