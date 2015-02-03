@@ -1,0 +1,12 @@
+
+
+
+switch(pathname){
+
+     case '/socket':
+     
+      
+     
+
+
+}
