@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+   
+   <head>
+        <style>
+		  
+		   *{
+		   
+		     list-style:none;
+		   }
+		 
+		</style>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	    <script>
+             
+
+            function getUserList(uId,rese){
+			
+			    var url = "http://192.168.34.235:8080/getUserList?callback=?";
+		        $.getJSON(url,function(data){
+			        console.info(data); 
+                    if(data.state == "success"){
+					    var list = eval("("+data.userList+")");
+						var str = "";
+						var obj = document.getElementById(uId);
+						for(var i=0;i<list.length;i++){
+						   str += "<li id="+list[i].id+" onclick='setName(this,\""+rese+"\")'>"+list[i].name+"</li>"
+					    }
+						obj.innerHTML = str;
+					}        
+			    });
+			}
+			
+			function setName(obj,rece){
+			      
+				 
+			      var receObj   =  document.getElementById(rece);
+			      receObj.value = obj.innerHTML;
+                  receObj.nextSibling.nextSibling.value = obj.id;
+                  console.log("ddddddddddd"+receObj.nextSibling.value);   				  
+                    				  
+			}
+			
+			
+			function addMember(){
+			
+			     var url = "http://192.168.34.235:8080/getUserList?callback=?";
+		         $.getJSON(url,function(data){
+			         console.info(data); 
+                     if(data.state == "success"){
+					    var list = eval("("+data.userList+")");
+						var str = "";
+						var obj = document.getElementById("group");
+						for(var i=0;i<list.length;i++){
+						   str += "<li><input type='checkbox' id='"+list[i].id+"' name='groupmember'/>"+list[i].name+"</li>";
+					    }
+						
+						obj.innerHTML = str;
+					 }        
+			     });
+		    }
+			
+			
+			function addGroup(){
+			     var temp = "";
+				 var nodeList = document.getElementsByName("groupmember");
+			     for(var i=0;i<nodeList.length;i++){
+				    if(nodeList[i].checked){
+					    temp += nodeList[i].id+";";  
+					}    
+				 }
+				
+				 temp = temp.substring(0,temp.lastIndexOf(";"));
+				 var memberObj = document.getElementById("member");
+				 memberObj.value = temp;			 
+				 document.forms[0].submit(); 
+			}
+		    </script>	   
+   </head>   
+   <body>
+        <p>添加群</p>
+        <form action="http://192.168.34.235:8080/addGroup" method="post">  
+             <div>
+			     群名称:<input id="recevier" type="text" name="name"></input>
+             </div>
+			 <div>
+			     群公告:<input type="text" name="announcement" ></input> 
+			 </div>
+			 <div>
+			     创建人:<span></span>
+				 <input id="creater"    type="text"   name="creater" onclick="getUserList('listS','creater')"></input>
+				 <input id="createrId" type="hidden" name="createrId" ></input>
+                 <ul id="listS"></ul> 
+			 </div>
+			 <div>
+			     群成员:<span onclick="addMember()">点击添加</span>
+				 <ul id="group">
+				 </ul>
+                 <input id="member" type="hidden" name="member" ></input> 				 
+			 </div>
+			 <div>
+			     <input type="button" onclick="addGroup()" value="创建"></input> 
+			 </div>
+        </form>
+   </body>
+</html>
