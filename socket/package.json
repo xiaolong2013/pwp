@@ -1,0 +1,18 @@
+{
+  "name": "socket",
+  "version": "0.0.1",
+  "main": "getData.js",
+  "private": true,
+  "dependencies": {
+    "connect-mongo": "0.4.1",
+    "log4js": "0.6.16",
+    "soap": "0.5.0",
+    "data2xml": "0.8.0",
+    "socket.io":"0.9.16", 
+	"forever":"0.11.1",
+	"mongodb":"1.4.0"
+  },
+  "scripts": {
+    "start": "node getData.js"
+  }
+}
