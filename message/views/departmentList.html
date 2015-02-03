@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+   
+   <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<style>
+		   *{
+		     list-style:none;
+		   
+		   }
+		</style>
+		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script type="text/javascript">
+		    $(function(){
+		        getData(10000,"dep");
+		    });
+		    function  getData(id,ulId){
+			    var url = "http://192.168.34.235:8080/getDepList?id="+id+"&callback=?";
+		        $.getJSON(url,function(data){
+			      if(data.state == "success"){
+				      
+					  console.info(data.departments);
+					  console.info(data.members);
+					  var arr = eval("("+data.departments+")");
+					  
+					  var memArr = eval("("+data.members+")");
+					  //var arr = data.depContent;
+					  var obj = document.getElementById(ulId);					  
+				      var nodeList = "";
+				      //var depArr = eval("("+arr[0].departments+")");
+					  for(var i=0;i<(arr.length||memArr.length);i++){
+							var str = "";
+							var str1 = "";
+							var str2 = "";
+							if(memArr[i] && memArr[i].nickName){
+							    str = memArr[i].nickName;
+							}
+							if(arr[i] && arr[i].id){
+							   str1 = arr[i].id;
+							}
+							if(arr[i] && arr[i].name){
+							   str2 = arr[i].name;
+							}
+						    nodeList += "<li  onclick=getDepData(this,"+str1+")><input type='radio' name='"+str2+"' value='"+str1+"'>"+str2+":"+str+"</li><ul id=\""+str1+"\"></ul>";  
+					  }
+					  //目前各部门的数据已经显示出来了 虽然有点丑
+					  obj.innerHTML = nodeList;
+					  
+				  }
+			    });
+		    }
+			
+		    function  getDepData(obj,id){
+			      
+				 var child = obj.nextSibling;
+			     getData(child.id,child.id);
+				 var s = obj.children[0].name;
+				 var t = obj.children[0].value;
+				 //alert("s==="+s+"t===="+t);
+				 setData(s,t);
+			}
+			
+			function setData(name,value){
+			
+			   
+			   document.getElementById("depName").value = name;
+			   document.getElementById("depId").value = value;
+				
+				   
+			}
+			
+			
+			function getUserList(uId,rese){
+			
+			   var url = "http://192.168.34.235:8080/getUserList?callback=?";
+		       $.getJSON(url,function(data){
+			         console.info(data); 
+                     if(data.state == "success"){
+					 
+					    
+						var list = eval("("+data.userList+")");
+						
+						var str = "";
+						var obj = document.getElementById(uId);
+						
+						for(var i=0;i<list.length;i++){
+						   str += "<li id="+list[i].id+" onclick='setName(this,\""+rese+"\")'>"+list[i].name+"</li>"
+					    }
+						
+						obj.innerHTML = str;
+					 
+					 }        
+			    });
+			       
+			
+			}
+			function setName(obj,rece){
+			      var receObj   =  document.getElementById(rece);
+			      receObj.value = obj.innerHTML;
+                  receObj.nextSibling.nextSibling.value = obj.id;
+                  console.log("ddddddddddd"+receObj.nextSibling.value);   				  
+            }
+	    </script>
+   </head>
+   <body>
+       <ul id="dep">
+
+       </ul>
+	   <div>
+	       <input type="button" value="确认" onclick="addData()"></input>
+	   </div>
+       <form action="http://192.168.34.235:8080/addMessage" method="post"> 	   
+             
+			<div>部门名称: <input id="depName" type="text" name="depName"></input><input id="depId" type="hidden" name="depId"></input><input  type="hidden" name="type" value="2"></input></div>
+            <div>通知标题: <input  type="text" name="title"></input></div>  	         
+			<div>通知内容: <textarea name="content"></textarea></div>
+            <div>
+			    发布者信息:<span></span>
+				<input id="sender" type="text" name="sender" onclick="getUserList('listS','sender')"></input>
+				<input id="senderId" type="hidden" name="senderId" ></input>
+                <ul id="listS"></ul> 
+			 </div>
+            <div>
+			<input type="submit" value="提交"/></div>  			
+		</form>	   
+   </body>
+</html>
