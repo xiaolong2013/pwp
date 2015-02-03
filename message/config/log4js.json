@@ -1,0 +1,17 @@
+
+{
+  "appenders":[
+    {
+      "type": "console", 
+	  "category": "logInfo"
+    },
+    {
+      "type": "dateFile",
+      "filename": "./logs/pwp.log",     
+      "absolute": true,
+	  "maxLogSize":20480,
+	  "backups":10,
+      "category": "logInfo"
+    }], 
+  "levels":{"logInfo":"DEBUG"}
+}
