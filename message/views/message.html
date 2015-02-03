@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+   <head>
+       <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	   <script>
+            $(function(){
+		        var url = "http://192.168.34.235:8080/getMessage?name=hcyangxiaolong01&callback=?";
+		        $.getJSON(url,function(data){
+			         console.info(data); 
+                     var messageObj = document.getElementById('message');
+					 var str = "";
+					 for(var i in data){
+					    if(i == "messages"){
+					         var cc = eval('('+data[i]+')');
+						     
+							 for(var s=0;s<cc.length;s++){
+							    
+								for(var f in cc[s]){
+								   if(f == "id"){
+									  str += "<input type='hidden' value=\""+cc[s][f]+"\">";
+								   }else{
+									  str += "<li><a href=\"javascript:info('"+cc[s]['id']+"')\">"+i+":"+cc[s][f]+"</a></li>";
+								   }
+								   //console.log(f+"==="+cc[0][f]);
+								 }
+							}
+					    }else{
+						     //console.log(i+"==="+data[i]);
+							 str += "<li>"+i+":"+data[i]+"</li>";
+					    }
+					 }
+                     messageObj.innerHTML = str;					 
+				});
+		    });
+			
+			function info(obj){
+			    var url = "http://192.168.34.235:8080/getMessageInfo?id="+obj+"&callback=?"; 
+			    $.getJSON(url,function(data){
+				    console.info(data);
+				});
+			} 
+	    </script>	   
+    </head>   
+    <body>
+        <ul id="message"></ul>		
+    </body>
+</html>
